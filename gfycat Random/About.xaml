@@ -5,12 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:gfycat_Random"
         mc:Ignorable="d"
-        Title="About" Width="200" ResizeMode="NoResize" Height="140">
+        Title="About" Width="200" ResizeMode="NoResize" Height="130" Topmost="True">
     <Grid>
-        <TextBlock x:Name="textBlock" Margin="10" TextWrapping="Wrap">
-            <Hyperlink NavigateUri="http://misterx-hp.3server.de" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Homepage"/></Hyperlink><LineBreak/>
-            <Hyperlink NavigateUri="https://github.com/MisterX2000" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Github Profile"/></Hyperlink><LineBreak/>
-            <Hyperlink NavigateUri="https://github.com/MisterX2000/gfycat-Random" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Github Project"/></Hyperlink>
-            <LineBreak/><Run/><LineBreak/><Run Text="Made by Mister X"/></TextBlock>
+        <TextBlock x:Name="textBlock" Margin="10,0,10,10" TextWrapping="Wrap"><Hyperlink NavigateUri="http://misterx-hp.3server.de/"><Run Text="Homepage"/></Hyperlink><LineBreak/><Hyperlink NavigateUri="https://github.com/MisterX2000"><Run Text="Github Profile"/></Hyperlink><LineBreak/><Hyperlink NavigateUri="https://github.com/MisterX2000/gfycat-Random"><Run Text="Github Project"/></Hyperlink><LineBreak/><LineBreak/><Run Text="Made by Mister X"/></TextBlock>
     </Grid>
 </Window>

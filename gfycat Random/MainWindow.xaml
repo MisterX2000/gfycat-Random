@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:gfycat_Random"
         mc:Ignorable="d"
-        Title="gfycat Random" Height="350" Width="525">
+        Title="gfycat Random" Height="400" Width="600" MinWidth="300" MinHeight="200">
     <Grid>
         <MediaElement x:Name="mediaElement" Margin="0,51,0,0" Volume="0" IsMuted="True" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual" MediaFailed="mediaElement_MediaFailed" MediaOpened="mediaElement_MediaOpened"/>
         <Menu x:Name="menu" VerticalAlignment="Top" IsHitTestVisible="True">
@@ -22,7 +22,7 @@
             </MenuItem>
             <MenuItem x:Name="mi_about" Header="About" Click="mi_about_Click"/>
         </Menu>
-        <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54"/>
+        <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54" ToolTip="May takes some time before you find something."/>
         <Label x:Name="l_link" Content="http://giant.gfycat.com/" HorizontalAlignment="Left" Margin="69,20,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.725,1.734"/>
         <Button x:Name="bt_copylink" Content="Copy Link" Margin="0,23,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="bt_copylink_Click" Width="61"/>
     </Grid>
