@@ -1,0 +1,16 @@
+﻿<Window x:Class="gfycat_Random.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:gfycat_Random"
+        mc:Ignorable="d"
+        Title="About" Width="200" ResizeMode="NoResize" Height="140">
+    <Grid>
+        <TextBlock x:Name="textBlock" Margin="10" TextWrapping="Wrap">
+            <Hyperlink NavigateUri="http://misterx-hp.3server.de" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Homepage"/></Hyperlink><LineBreak/>
+            <Hyperlink NavigateUri="https://github.com/MisterX2000" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Github Profile"/></Hyperlink><LineBreak/>
+            <Hyperlink NavigateUri="https://github.com/MisterX2000/gfycat-Random" RequestNavigate="Hyperlink_RequestNavigate"><Run Text="Github Project"/></Hyperlink>
+            <LineBreak/><Run/><LineBreak/><Run Text="Made by Mister X"/></TextBlock>
+    </Grid>
+</Window>
