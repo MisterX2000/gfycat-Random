@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:gfycat_Random"
         mc:Ignorable="d"
-        Title="About" Width="200" ResizeMode="NoResize" Height="130" Topmost="True">
+        Title="About" Topmost="True" Icon="gfycat Random.ico" ResizeMode="NoResize" SizeToContent="WidthAndHeight">
     <Grid>
-        <TextBlock x:Name="textBlock" Margin="10,0,10,10" TextWrapping="Wrap"><Hyperlink NavigateUri="http://misterx-hp.3server.de/"><Run Text="Homepage"/></Hyperlink><LineBreak/><Hyperlink NavigateUri="https://github.com/MisterX2000"><Run Text="Github Profile"/></Hyperlink><LineBreak/><Hyperlink NavigateUri="https://github.com/MisterX2000/gfycat-Random"><Run Text="Github Project"/></Hyperlink><LineBreak/><LineBreak/><Run Text="Made by Mister X"/></TextBlock>
+        <TextBlock x:Name="textBlock" Margin="10,5,10,10" TextWrapping="Wrap" HorizontalAlignment="Left" VerticalAlignment="Top"><Hyperlink NavigateUri="http://misterx-hp.3server.de/"><Run Text="Homepage"/></Hyperlink><LineBreak/><Hyperlink NavigateUri="https://github.com/MisterX2000"><Run Text="Github Profile"/></Hyperlink><LineBreak/><Hyperlink NavigateUri="https://github.com/MisterX2000/gfycat-Random"><Run Text="Github Project"/></Hyperlink><LineBreak/><LineBreak/><Run Text="Made b"/><Run Text="y Mis"/><Run Text="ter X"/></TextBlock>
+        <Label x:Name="l_version" Content="v" HorizontalAlignment="Left" Margin="120,0,5,5" VerticalAlignment="Bottom"/>
     </Grid>
 </Window>

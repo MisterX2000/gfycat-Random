@@ -2,7 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Windows;
+using Newtonsoft.Json.Linq;
 
 namespace gfycat_Random
 {
@@ -11,12 +13,18 @@ namespace gfycat_Random
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string format = "mp4";
+        private readonly string[] adj;
+        private readonly string[] ani;
+        private int fails;
+
         public MainWindow()
         {
             InitializeComponent();
-        }
 
-        private string format = "mp4";
+            adj = File.ReadAllLines(@"adjectives.txt");
+            ani = File.ReadAllLines(@"animals.txt");
+        }
 
         private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
@@ -25,29 +33,50 @@ namespace gfycat_Random
 
         private void bt_random_Click(object sender, RoutedEventArgs e)
         {
+            if (mi_stopmedia.IsChecked)
+                mediaElement.Close();
+
             DoStuff();
         }
 
-        private void DoStuff()
+        private async void DoStuff()
         {
-            mediaElement.Source = new Uri(GetRandomLink());
-            mediaElement.Play();
-            l_link.Content = mediaElement.Source.AbsoluteUri;
-        }
-
-        private string GetRandomLink()
-        {
-            var adj = File.ReadAllLines(@"adjectives.txt");
-            var ani = File.ReadAllLines(@"animals.txt");
             var r = new Random();
 
             var word1 = UppercaseFirst(adj[r.Next(0, adj.Count() - 1)]);
             var word2 = UppercaseFirst(adj[r.Next(0, adj.Count() - 1)]);
             var word3 = UppercaseFirst(ani[r.Next(0, ani.Count() - 1)]);
 
-            var link = string.Format("http://giant.gfycat.com/{0}.{1} ", word1 + word2 + word3, format);
+            var wordcomb = word1 + word2 + word3;
+            //wordcomb = "NervousInsistentGroundbeetle";
 
-            return link;
+            using (var httpClient = new HttpClient())
+            {
+                var jstring = await httpClient.GetStringAsync(string.Format("https://gfycat.com/cajax/get/" + wordcomb));
+
+                var json = JObject.Parse(jstring);
+
+                if (json.Property("error") == null)
+                {
+                    var url = json.Property("gfyItem").Value[format + "Url"].ToObject<string>();
+
+                    mediaElement.Source = new Uri(url.Replace("https://", "http://"));
+                    mediaElement.Play();
+
+                    l_link.Content = url;
+                    mi_save.IsEnabled = true;
+                    bt_copylink.IsEnabled = true;
+                    fails = 0;
+                }
+                else
+                {
+                    fails++;
+                    l_link.Content = $"Searching ({fails})";
+                    mi_save.IsEnabled = false;
+                    bt_copylink.IsEnabled = false;
+                    DoStuff();
+                }
+            }
         }
 
         static string UppercaseFirst(string s)
@@ -67,35 +96,25 @@ namespace gfycat_Random
             Close();
         }
 
-        private void mediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
-        {
-            DoStuff();
-
-            mi_save.IsEnabled = false;
-        }
-
         private void mi_save_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.FileName = mediaElement.Source.LocalPath.Substring(1);
-            dlg.DefaultExt = "." + format;
-            dlg.Filter = "Video|*.mp4;*.webm;*.gif";
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = mediaElement.Source.LocalPath.Substring(1),
+                DefaultExt = "." + format,
+                Filter = "Video|*.mp4;*.webm;*.gif"
+            };
 
             // Show save file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
+            var result = dlg.ShowDialog();
 
             // Process save file dialog box results
             if (result == true)
             {
                 // Save document
-                string filename = dlg.FileName;
+                var filename = dlg.FileName;
                 new WebClient().DownloadFile(mediaElement.Source.AbsoluteUri, filename);
             }
-        }
-
-        private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            mi_save.IsEnabled = true;
         }
 
         private void mi_mp4_Checked(object sender, RoutedEventArgs e)
