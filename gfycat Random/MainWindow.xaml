@@ -11,6 +11,7 @@
         <Menu x:Name="menu" VerticalAlignment="Top" IsHitTestVisible="True">
             <MenuItem Header="File">
                 <MenuItem x:Name="mi_save" Header="Save gfycat" Click="mi_save_Click" IsEnabled="False"/>
+                <MenuItem x:Name="mi_stop" Header="Stop Search" Click="mi_stop_Click"/>
                 <MenuItem x:Name="mi_exit" Header="Exit" Click="mi_exit_Click"/>
             </MenuItem>
             <MenuItem Header="Settings">
@@ -19,6 +20,7 @@
                     <MenuItem x:Name="mi_webm" Header="webm" IsCheckable="True" Checked="mi_webm_Checked"/>
                     <MenuItem x:Name="mi_gif" Header="gif" IsCheckable="True" Checked="mi_gif_Checked" ToolTip="WARNING! Very long loading times."/>
                 </MenuItem>
+                <MenuItem x:Name="mi_threads" Header="Use multiple threads" IsCheckable="True" ToolTip="WARNING! May cause the program to crash."/>
                 <MenuItem x:Name="mi_stopmedia" Header="Stop media while searching" IsCheckable="True" ToolTip="Stops the playback of the gfycat video while searching new ones." IsChecked="True"/>
             </MenuItem>
             <MenuItem x:Name="mi_about" Header="About" Click="mi_about_Click"/>

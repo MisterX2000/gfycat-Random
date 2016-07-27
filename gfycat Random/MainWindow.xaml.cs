@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Windows;
 using Newtonsoft.Json.Linq;
 
@@ -17,6 +18,8 @@ namespace gfycat_Random
         private readonly string[] adj;
         private readonly string[] ani;
         private int fails;
+
+        private CancellationTokenSource cts;
 
         public MainWindow()
         {
@@ -33,14 +36,28 @@ namespace gfycat_Random
 
         private void bt_random_Click(object sender, RoutedEventArgs e)
         {
+            cts = new CancellationTokenSource();
+
             if (mi_stopmedia.IsChecked)
                 mediaElement.Close();
 
-            DoStuff();
+            if (mi_threads.IsChecked)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    DoStuff(cts.Token);
+                }
+            }
+            else
+            {
+                DoStuff(cts.Token);
+            }
         }
 
-        private async void DoStuff()
+        private async void DoStuff(CancellationToken cToken)
         {
+            bt_random.IsEnabled = false;
+
             var r = new Random();
 
             var word1 = UppercaseFirst(adj[r.Next(0, adj.Count() - 1)]);
@@ -54,15 +71,21 @@ namespace gfycat_Random
             {
                 var jstring = await httpClient.GetStringAsync(string.Format("https://gfycat.com/cajax/get/" + wordcomb));
 
+                if (cToken.IsCancellationRequested)
+                    return;
+
                 var json = JObject.Parse(jstring);
 
                 if (json.Property("error") == null)
                 {
+                    cts.Cancel();
+
                     var url = json.Property("gfyItem").Value[format + "Url"].ToObject<string>();
 
                     mediaElement.Source = new Uri(url.Replace("https://", "http://"));
                     mediaElement.Play();
 
+                    bt_random.IsEnabled = true;
                     l_link.Content = url;
                     mi_save.IsEnabled = true;
                     bt_copylink.IsEnabled = true;
@@ -74,7 +97,7 @@ namespace gfycat_Random
                     l_link.Content = $"Searching ({fails})";
                     mi_save.IsEnabled = false;
                     bt_copylink.IsEnabled = false;
-                    DoStuff();
+                    DoStuff(cts.Token);
                 }
             }
         }
@@ -145,6 +168,14 @@ namespace gfycat_Random
         private void mi_about_Click(object sender, RoutedEventArgs e)
         {
             new About().ShowDialog();
+        }
+
+        private void mi_stop_Click(object sender, RoutedEventArgs e)
+        {
+            cts.Cancel();
+            bt_random.IsEnabled = true;
+            l_link.Content = "Search stopped";
+            fails = 0;
         }
     }
 }
