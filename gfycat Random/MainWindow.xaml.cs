@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Windows;
+using System.Windows.Input;
 using Newtonsoft.Json.Linq;
 
 namespace gfycat_Random
@@ -44,14 +45,10 @@ namespace gfycat_Random
             if (mi_threads.IsChecked)
             {
                 for (int i = 0; i < 5; i++)
-                {
                     DoStuff(cts.Token);
-                }
             }
             else
-            {
                 DoStuff(cts.Token);
-            }
         }
 
         private async void DoStuff(CancellationToken cToken)
@@ -172,10 +169,41 @@ namespace gfycat_Random
 
         private void mi_stop_Click(object sender, RoutedEventArgs e)
         {
-            cts.Cancel();
-            bt_random.IsEnabled = true;
-            l_link.Content = "Search stopped";
-            fails = 0;
+            try
+            {
+                cts.Cancel();
+                bt_random.IsEnabled = true;
+                l_link.Content = "Search stopped";
+                fails = 0;
+            }
+            catch
+            {
+                l_link.Content = "There is nothing to stop.";
+            }
+        }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Space:
+                    bt_random_Click(null, null);
+                    break;
+                case Key.Escape:
+                    mi_stop_Click(null, null);
+                    break;
+            }
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.S && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && mi_save.IsEnabled)
+                mi_save_Click(null, null);
+            else if (e.Key == Key.C && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && bt_copylink.IsEnabled)
+            {
+                bt_copylink_Click(null,null);
+                MessageBox.Show("The link has been copied in to your clipboard.", "Copy Link", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
     }
 }
