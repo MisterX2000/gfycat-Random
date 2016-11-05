@@ -21,7 +21,7 @@ namespace gfycat_Random
         private readonly string[] adj;
         private readonly string[] ani;
         private int fails;
-        private int threads = 1;
+        private int threads = 10;
 
         private CancellationTokenSource cts;
 
@@ -72,9 +72,9 @@ namespace gfycat_Random
 
             var r = new Random();
 
-            var word1 = UppercaseFirst(adj[r.Next(0, adj.Count() - 1)]);
-            var word2 = UppercaseFirst(adj[r.Next(0, adj.Count() - 1)]);
-            var word3 = UppercaseFirst(ani[r.Next(0, ani.Count() - 1)]);
+            var word1 = adj[r.Next(0, adj.Length - 1)];
+            var word2 = adj[r.Next(0, adj.Length - 1)];
+            var word3 = ani[r.Next(0, ani.Length - 1)];
 
             var wordcomb = word1 + word2 + word3;
             //wordcomb = "NervousInsistentGroundbeetle";
@@ -96,14 +96,16 @@ namespace gfycat_Random
                     mediaElement.Play();
 
                     bt_random.IsEnabled = true;
+                    bt_openlink.IsEnabled = true;
                     bt_copylink.IsEnabled = true;
                     mi_settings.IsEnabled = true;
                     mi_save.IsEnabled = true;
                     mi_stop.IsEnabled = false;
 
-                    l_link.Content = url;
+                    l_link.Content = "https://gfycat.com/" + json.Property("gfyItem").Value["gfyName"];
                     li_title.Content = "Title: " + json.Property("gfyItem").Value["title"];
                     li_views.Content = "Views: " + json.Property("gfyItem").Value["views"];
+                    li_uploader.Content = "Uploader: " + json.Property("gfyItem").Value["userName"];
                     li_date.Content = UtsToDate(json.Property("gfyItem").Value["createDate"].ToObject<double>());
                     fails = 0;
                 }
@@ -113,6 +115,7 @@ namespace gfycat_Random
                     l_link.Content = $"Searching ({fails})";
                     mi_save.IsEnabled = false;
                     mi_stop.IsEnabled = true;
+                    bt_openlink.IsEnabled = false;
                     bt_copylink.IsEnabled = false;
                     DoStuff(cts.Token);
                 }
@@ -123,16 +126,9 @@ namespace gfycat_Random
             }
         }
 
-        static string UppercaseFirst(string s)
-        {
-            if (string.IsNullOrEmpty(s))
-                return string.Empty;
-            return char.ToUpper(s[0]) + s.Substring(1);
-        }
-
         private void bt_copylink_Click(object sender, RoutedEventArgs e)
         {
-            Clipboard.SetText(mediaElement.Source.AbsoluteUri);
+            Clipboard.SetText(l_link.Content.ToString());
         }
 
         private void mi_exit_Click(object sender, RoutedEventArgs e)
@@ -227,15 +223,19 @@ namespace gfycat_Random
             if (e.Key == Key.S && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && mi_save.IsEnabled)
                 mi_save_Click(null, null);
             else if (e.Key == Key.C && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && bt_copylink.IsEnabled)
-            {
                 bt_copylink_Click(null, null);
-                MessageBox.Show("The link has been copied in to your clipboard.", "Copy Link", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+            else if (e.Key == Key.O && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && bt_openlink.IsEnabled)
+                bt_openlink_Click(null, null);
         }
 
         private void mi_threads_Click(object sender, RoutedEventArgs e)
         {
             threads = mi_threads.IsChecked ? 10 : 1;
+        }
+
+        private void bt_openlink_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(l_link.Content.ToString());
         }
     }
 }
