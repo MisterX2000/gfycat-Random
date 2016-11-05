@@ -6,29 +6,41 @@
         xmlns:local="clr-namespace:gfycat_Random"
         xmlns:Properties="clr-namespace:gfycat_Random.Properties" x:Class="gfycat_Random.MainWindow"
         mc:Ignorable="d"
-        Title="gfycat Random" Height="400" Width="600" MinWidth="300" MinHeight="200" Icon="gfycat Random.ico" KeyUp="Window_KeyUp" KeyDown="Window_KeyDown">
+        Title="gfycat Random" Height="450" Width="600" MinWidth="300" MinHeight="200" Icon="gfycat Random.ico" KeyUp="Window_KeyUp" KeyDown="Window_KeyDown">
     <Grid>
-        <MediaElement x:Name="mediaElement" Margin="0,51,0,0" Volume="0" IsMuted="True" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"/>
-        <Menu x:Name="menu" VerticalAlignment="Top" IsHitTestVisible="True">
-            <MenuItem Header="_File">
-                <MenuItem x:Name="mi_save" Header="_Save gfycat" Click="mi_save_Click" IsEnabled="False" InputGestureText="Ctrl+S"/>
-                <MenuItem x:Name="mi_stop" Header="_Stop Search" Click="mi_stop_Click" InputGestureText="Escape"/>
-                <Separator/>
-                <MenuItem x:Name="mi_exit" Header="_Exit" Click="mi_exit_Click"/>
-            </MenuItem>
-            <MenuItem Header="_Settings">
-                <MenuItem Header="_File Format">
-                    <MenuItem x:Name="mi_mp4" Header="_mp4" IsCheckable="True" IsChecked="True" Checked="mi_mp4_Checked"/>
-                    <MenuItem x:Name="mi_webm" Header="_webm" IsCheckable="True" Checked="mi_webm_Checked"/>
-                    <MenuItem x:Name="mi_gif" Header="_gif" IsCheckable="True" Checked="mi_gif_Checked" ToolTip="WARNING! Very long loading times."/>
+        <Grid.RowDefinitions>
+            <RowDefinition MinHeight="100"/>
+            <RowDefinition Height="52"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <MediaElement x:Name="mediaElement" Margin="0,51,0,3" Volume="0" IsMuted="True" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"/>
+            <Menu x:Name="menu" VerticalAlignment="Top" IsHitTestVisible="True">
+                <MenuItem Header="_File">
+                    <MenuItem x:Name="mi_save" Header="_Save gfycat" Click="mi_save_Click" IsEnabled="False" InputGestureText="Ctrl+S"/>
+                    <MenuItem x:Name="mi_stop" Header="_Stop Search" Click="mi_stop_Click" InputGestureText="Escape"/>
+                    <Separator/>
+                    <MenuItem x:Name="mi_exit" Header="_Exit" Click="mi_exit_Click"/>
                 </MenuItem>
-                <MenuItem x:Name="mi_threads" Header="_Use multiple threads" IsCheckable="True" ToolTip="WARNING! May cause the program to crash."/>
-                <MenuItem x:Name="mi_stopmedia" Header="_Stop media while searching" IsCheckable="True" ToolTip="Stops the playback of the gfycat video while searching new ones." IsChecked="True"/>
-            </MenuItem>
-            <MenuItem x:Name="mi_about" Header="_About" Click="mi_about_Click"/>
-        </Menu>
-        <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54" ToolTip="May takes some time before you find something.&#x0a;Shortcut: Space"/>
-        <Label x:Name="l_link" Content="https://gfycat.com/" HorizontalAlignment="Left" Margin="69,20,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.725,1.734"/>
-        <Button x:Name="bt_copylink" Content="Copy Link" Margin="0,23,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="bt_copylink_Click" Width="61" IsEnabled="False" ToolTip="Shortcut: Ctrl+C"/>
+                <MenuItem x:Name="mi_settings" Header="_Settings">
+                    <MenuItem Header="_File Format">
+                        <MenuItem x:Name="mi_mp4" Header="_mp4" IsCheckable="True" IsChecked="True" Checked="mi_mp4_Checked"/>
+                        <MenuItem x:Name="mi_webm" Header="_webm" IsCheckable="True" Checked="mi_webm_Checked"/>
+                        <MenuItem x:Name="mi_gif" Header="_gif" IsCheckable="True" Checked="mi_gif_Checked" ToolTip="WARNING! Very long loading times."/>
+                    </MenuItem>
+                    <MenuItem x:Name="mi_threads" Header="_Threading" IsCheckable="True" ToolTip="Could be unstable" Click="mi_threads_Click"/>
+                    <MenuItem x:Name="mi_stopmedia" Header="_Stop media while searching" IsCheckable="True" ToolTip="Stops the playback of the gfycat video while searching new ones." IsChecked="True"/>
+                </MenuItem>
+                <MenuItem x:Name="mi_about" Header="_About" Click="mi_about_Click"/>
+            </Menu>
+            <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54" ToolTip="May takes some time before you find something.&#x0a;Shortcut: Space"/>
+            <Label x:Name="l_link" Content="https://gfycat.com/" HorizontalAlignment="Left" Margin="69,20,0,0" VerticalAlignment="Top"/>
+            <Button x:Name="bt_copylink" Content="Copy Link" Margin="0,23,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="bt_copylink_Click" Width="61" IsEnabled="False" ToolTip="Shortcut: Ctrl+C"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Label x:Name="li_title" Content="Title: " HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <Label x:Name="li_views" Content="Views: " HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            <Label x:Name="li_date" Content="Creation Date" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,26,0,0"/>
+        </Grid>
+        <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="3" Grid.Row="0" DragIncrement="26"/>
     </Grid>
 </Window>

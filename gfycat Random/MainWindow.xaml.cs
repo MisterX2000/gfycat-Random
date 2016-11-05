@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Newtonsoft.Json.Linq;
@@ -19,6 +21,7 @@ namespace gfycat_Random
         private readonly string[] adj;
         private readonly string[] ani;
         private int fails;
+        private int threads = 1;
 
         private CancellationTokenSource cts;
 
@@ -42,18 +45,30 @@ namespace gfycat_Random
             if (mi_stopmedia.IsChecked)
                 mediaElement.Close();
 
-            if (mi_threads.IsChecked)
-            {
-                for (int i = 0; i < 5; i++)
-                    DoStuff(cts.Token);
-            }
-            else
+            for (int i = 0; i < threads; i++)
                 DoStuff(cts.Token);
         }
 
-        private async void DoStuff(CancellationToken cToken)
+        private async Task<string> GetjsonStream(string url)
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public static DateTime UtsToDate(double unixTimeStamp)
+        {
+            // Unix timestamp is seconds past epoch
+            var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            return dtDateTime;
+        }
+
+        private async void DoStuff(CancellationToken ct)
         {
             bt_random.IsEnabled = false;
+            mi_settings.IsEnabled = false;
 
             var r = new Random();
 
@@ -64,28 +79,32 @@ namespace gfycat_Random
             var wordcomb = word1 + word2 + word3;
             //wordcomb = "NervousInsistentGroundbeetle";
 
-            using (var httpClient = new HttpClient())
+            try
             {
-                var jstring = await httpClient.GetStringAsync(string.Format("https://gfycat.com/cajax/get/" + wordcomb));
+                var json = JObject.Parse(await GetjsonStream("https://gfycat.com/cajax/get/" + wordcomb));
 
-                if (cToken.IsCancellationRequested)
-                    return;
+                ct.ThrowIfCancellationRequested();
 
-                var json = JObject.Parse(jstring);
 
                 if (json.Property("error") == null)
                 {
                     cts.Cancel();
 
-                    var url = json.Property("gfyItem").Value[format + "Url"].ToObject<string>();
+                    var url = json.Property("gfyItem").Value[format + "Url"].ToString();
 
                     mediaElement.Source = new Uri(url.Replace("https://", "http://"));
                     mediaElement.Play();
 
                     bt_random.IsEnabled = true;
-                    l_link.Content = url;
-                    mi_save.IsEnabled = true;
                     bt_copylink.IsEnabled = true;
+                    mi_settings.IsEnabled = true;
+                    mi_save.IsEnabled = true;
+                    mi_stop.IsEnabled = false;
+
+                    l_link.Content = url;
+                    li_title.Content = "Title: " + json.Property("gfyItem").Value["title"];
+                    li_views.Content = "Views: " + json.Property("gfyItem").Value["views"];
+                    li_date.Content = UtsToDate(json.Property("gfyItem").Value["createDate"].ToObject<double>());
                     fails = 0;
                 }
                 else
@@ -93,9 +112,14 @@ namespace gfycat_Random
                     fails++;
                     l_link.Content = $"Searching ({fails})";
                     mi_save.IsEnabled = false;
+                    mi_stop.IsEnabled = true;
                     bt_copylink.IsEnabled = false;
                     DoStuff(cts.Token);
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.Print(e.Message);
             }
         }
 
@@ -118,7 +142,7 @@ namespace gfycat_Random
 
         private void mi_save_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog
+            var dlg = new Microsoft.Win32.SaveFileDialog
             {
                 FileName = mediaElement.Source.LocalPath.Substring(1),
                 DefaultExt = "." + format,
@@ -173,6 +197,7 @@ namespace gfycat_Random
             {
                 cts.Cancel();
                 bt_random.IsEnabled = true;
+                mi_settings.IsEnabled = true;
                 l_link.Content = "Search stopped";
                 fails = 0;
             }
@@ -187,10 +212,12 @@ namespace gfycat_Random
             switch (e.Key)
             {
                 case Key.Space:
-                    bt_random_Click(null, null);
+                    if (bt_random.IsEnabled)
+                        bt_random_Click(null, null);
                     break;
                 case Key.Escape:
-                    mi_stop_Click(null, null);
+                    if (mi_stop.IsEnabled)
+                        mi_stop_Click(null, null);
                     break;
             }
         }
@@ -201,9 +228,14 @@ namespace gfycat_Random
                 mi_save_Click(null, null);
             else if (e.Key == Key.C && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && bt_copylink.IsEnabled)
             {
-                bt_copylink_Click(null,null);
+                bt_copylink_Click(null, null);
                 MessageBox.Show("The link has been copied in to your clipboard.", "Copy Link", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void mi_threads_Click(object sender, RoutedEventArgs e)
+        {
+            threads = mi_threads.IsChecked ? 10 : 1;
         }
     }
 }
