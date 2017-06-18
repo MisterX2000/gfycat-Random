@@ -13,7 +13,7 @@
             <RowDefinition Height="52" MaxHeight="52"/>
         </Grid.RowDefinitions>
         <Grid>
-            <MediaElement x:Name="mediaElement" Margin="0,51,0,3" Volume="0" IsMuted="True" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual"/>
+            <MediaElement x:Name="mediaElement" Margin="0,51,0,3" Volume="0" IsMuted="True" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual" d:IsHidden="True" IsEnabled="False"/>
             <Menu x:Name="menu" VerticalAlignment="Top" IsHitTestVisible="True">
                 <MenuItem Header="_File">
                     <MenuItem x:Name="mi_save" Header="_Save gfycat" Click="mi_save_Click" IsEnabled="False" InputGestureText="Ctrl+S"/>
@@ -32,10 +32,11 @@
                 </MenuItem>
                 <MenuItem x:Name="mi_about" Header="_About" Click="mi_about_Click"/>
             </Menu>
-            <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54" ToolTip="May takes some time before you find something.&#x0a;Shortcut: Space"/>
+            <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54" ToolTip="May takes some time before you find something.&#x0a;Shortcut: Space" IsEnabled="False"/>
             <Label x:Name="l_link" Content="https://gfycat.com/" HorizontalAlignment="Left" Margin="69,20,0,0" VerticalAlignment="Top"/>
             <Button x:Name="bt_copylink" Content="Copy Link" Margin="0,23,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="bt_copylink_Click" IsEnabled="False" ToolTip="Copy link to clipboard&#x0a;Shortcut: Ctrl+C" Width="60"/>
             <Button x:Name="bt_openlink" Content="Open" Margin="0,23,75,0" VerticalAlignment="Top" HorizontalAlignment="Right" IsEnabled="False" ToolTip="Opens URL in browser&#x0a;Shortcut: Ctrl+O" Width="40" Click="bt_openlink_Click"/>
+            <WebBrowser x:Name="browser" Margin="0,51,0,3"/>
         </Grid>
         <Grid Grid.Row="1">
             <Label x:Name="li_title" Content="Title: " HorizontalAlignment="Left" VerticalAlignment="Top"/>

@@ -17,47 +17,88 @@ namespace gfycat_Random
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string format = "mp4";
-        private readonly string[] adj;
-        private readonly string[] ani;
-        private int fails;
-        private int threads = 10;
+        string format = "mp4";
+        string[] adj;
+        string[] ani;
+        int fails;
+        int threads = 10;
 
-        private CancellationTokenSource cts;
+        CancellationTokenSource cts;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            adj = File.ReadAllLines(@"adjectives.txt");
-            ani = File.ReadAllLines(@"animals.txt");
+            GetStrings();
         }
 
-        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        async void GetStrings()
+        {
+            var error = false;
+            if (!File.Exists("adjectives.txt"))
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync("http://assets.gfycat.com/adjectives");
+                    if (response.IsSuccessStatusCode)
+                        File.WriteAllText("adjectives.txt", await response.Content.ReadAsStringAsync());
+                    else
+                    {
+                        MessageBox.Show("adjectives status: " + response.StatusCode, "Cannot get file", MessageBoxButton.OK, MessageBoxImage.Error);
+                        error = true;
+                    }
+                }
+
+            if (!File.Exists("animals.txt"))
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync("http://assets.gfycat.com/animals");
+                    if (response.IsSuccessStatusCode)
+                        File.WriteAllText("animals.txt", await response.Content.ReadAsStringAsync());
+                    else
+                    {
+                        MessageBox.Show("animals status: " + response.StatusCode, "Cannot get file", MessageBoxButton.OK, MessageBoxImage.Error);
+                        error = true;
+                    }
+                }
+
+            if (error) return;
+            LoadStrings();
+            bt_random.IsEnabled = true;
+        }
+
+        void LoadStrings()
+        {
+            adj = File.ReadAllLines("adjectives.txt");
+            ani = File.ReadAllLines("animals.txt");
+        }
+
+        void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
             mediaElement.Position = new TimeSpan(0, 0, 0);
         }
 
-        private void bt_random_Click(object sender, RoutedEventArgs e)
+        void bt_random_Click(object sender, RoutedEventArgs e)
         {
             cts = new CancellationTokenSource();
 
             if (mi_stopmedia.IsChecked)
                 mediaElement.Close();
 
-            for (int i = 0; i < threads; i++)
+            for (var i = 0; i < threads; i++)
                 DoStuff(cts.Token);
         }
 
-        private async Task<string> GetjsonStream(string url)
+        async Task<string> GetjsonStream(string url)
         {
-            var client = new HttpClient();
-            var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStringAsync();
+            }
         }
 
-        public static DateTime UtsToDate(double unixTimeStamp)
+        static DateTime UtsToDate(double unixTimeStamp)
         {
             // Unix timestamp is seconds past epoch
             var dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
@@ -65,7 +106,7 @@ namespace gfycat_Random
             return dtDateTime;
         }
 
-        private async void DoStuff(CancellationToken ct)
+        async void DoStuff(CancellationToken ct)
         {
             bt_random.IsEnabled = false;
             mi_settings.IsEnabled = false;
@@ -77,7 +118,7 @@ namespace gfycat_Random
             var word3 = ani[r.Next(0, ani.Length - 1)];
 
             var wordcomb = word1 + word2 + word3;
-            //wordcomb = "NervousInsistentGroundbeetle";
+            wordcomb = "NervousInsistentGroundbeetle";
 
             try
             {
@@ -126,17 +167,17 @@ namespace gfycat_Random
             }
         }
 
-        private void bt_copylink_Click(object sender, RoutedEventArgs e)
+        void bt_copylink_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(l_link.Content.ToString());
         }
 
-        private void mi_exit_Click(object sender, RoutedEventArgs e)
+        void mi_exit_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        private void mi_save_Click(object sender, RoutedEventArgs e)
+        void mi_save_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
@@ -157,7 +198,7 @@ namespace gfycat_Random
             }
         }
 
-        private void mi_mp4_Checked(object sender, RoutedEventArgs e)
+        void mi_mp4_Checked(object sender, RoutedEventArgs e)
         {
             format = "mp4";
             if (mi_webm != null || mi_gif != null)
@@ -168,26 +209,26 @@ namespace gfycat_Random
 
         }
 
-        private void mi_webm_Checked(object sender, RoutedEventArgs e)
+        void mi_webm_Checked(object sender, RoutedEventArgs e)
         {
             format = "webm";
             mi_mp4.IsChecked = false;
             mi_gif.IsChecked = false;
         }
 
-        private void mi_gif_Checked(object sender, RoutedEventArgs e)
+        void mi_gif_Checked(object sender, RoutedEventArgs e)
         {
             format = "gif";
             mi_mp4.IsChecked = false;
             mi_webm.IsChecked = false;
         }
 
-        private void mi_about_Click(object sender, RoutedEventArgs e)
+        void mi_about_Click(object sender, RoutedEventArgs e)
         {
             new About().ShowDialog();
         }
 
-        private void mi_stop_Click(object sender, RoutedEventArgs e)
+        void mi_stop_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -203,7 +244,7 @@ namespace gfycat_Random
             }
         }
 
-        private void Window_KeyUp(object sender, KeyEventArgs e)
+        void Window_KeyUp(object sender, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -218,7 +259,7 @@ namespace gfycat_Random
             }
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.S && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control && mi_save.IsEnabled)
                 mi_save_Click(null, null);
@@ -228,12 +269,12 @@ namespace gfycat_Random
                 bt_openlink_Click(null, null);
         }
 
-        private void mi_threads_Click(object sender, RoutedEventArgs e)
+        void mi_threads_Click(object sender, RoutedEventArgs e)
         {
             threads = mi_threads.IsChecked ? 10 : 1;
         }
 
-        private void bt_openlink_Click(object sender, RoutedEventArgs e)
+        void bt_openlink_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(l_link.Content.ToString());
         }
