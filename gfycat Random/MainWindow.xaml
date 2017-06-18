@@ -3,8 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:local="clr-namespace:gfycat_Random"
-        xmlns:Properties="clr-namespace:gfycat_Random.Properties" x:Class="gfycat_Random.MainWindow"
+        xmlns:Properties="clr-namespace:gfycat_Random.Properties" xmlns:CefSharp="clr-namespace:CefSharp;assembly=CefSharp.Core" x:Class="gfycat_Random.MainWindow"
         mc:Ignorable="d"
         Title="gfycat Random" Height="450" Width="600" MinWidth="300" MinHeight="200" Icon="gfycat Random.ico" KeyUp="Window_KeyUp" KeyDown="Window_KeyDown">
     <Grid>
@@ -13,7 +14,6 @@
             <RowDefinition Height="52" MaxHeight="52"/>
         </Grid.RowDefinitions>
         <Grid>
-            <MediaElement x:Name="mediaElement" Margin="0,51,0,3" Volume="0" IsMuted="True" MediaEnded="mediaElement_MediaEnded" LoadedBehavior="Manual" d:IsHidden="True" IsEnabled="False"/>
             <Menu x:Name="menu" VerticalAlignment="Top" IsHitTestVisible="True">
                 <MenuItem Header="_File">
                     <MenuItem x:Name="mi_save" Header="_Save gfycat" Click="mi_save_Click" IsEnabled="False" InputGestureText="Ctrl+S"/>
@@ -22,21 +22,16 @@
                     <MenuItem x:Name="mi_exit" Header="_Exit" Click="mi_exit_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="mi_settings" Header="_Settings">
-                    <MenuItem Header="_File Format">
-                        <MenuItem x:Name="mi_mp4" Header="_mp4" IsCheckable="True" IsChecked="True" Checked="mi_mp4_Checked"/>
-                        <MenuItem x:Name="mi_webm" Header="_webm" IsCheckable="True" Checked="mi_webm_Checked"/>
-                        <MenuItem x:Name="mi_gif" Header="_gif" IsCheckable="True" Checked="mi_gif_Checked" ToolTip="WARNING! Very long loading times."/>
-                    </MenuItem>
                     <MenuItem x:Name="mi_threads" Header="_Threading" IsCheckable="True" IsChecked="True" ToolTip="Could be unstable" Click="mi_threads_Click"/>
                     <MenuItem x:Name="mi_stopmedia" Header="_Stop media while searching" IsCheckable="True" ToolTip="Stops the playback of the gfycat video while searching new ones." IsChecked="True"/>
                 </MenuItem>
                 <MenuItem x:Name="mi_about" Header="_About" Click="mi_about_Click"/>
             </Menu>
-            <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54" ToolTip="May takes some time before you find something.&#x0a;Shortcut: Space" IsEnabled="False"/>
+            <Button x:Name="bt_random" Content="Random" HorizontalAlignment="Left" Margin="10,23,0,0" VerticalAlignment="Top" Click="bt_random_Click" Width="54" ToolTip="May takes some time before you find something.&#xA;Shortcut: Space" IsEnabled="False"/>
             <Label x:Name="l_link" Content="https://gfycat.com/" HorizontalAlignment="Left" Margin="69,20,0,0" VerticalAlignment="Top"/>
-            <Button x:Name="bt_copylink" Content="Copy Link" Margin="0,23,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="bt_copylink_Click" IsEnabled="False" ToolTip="Copy link to clipboard&#x0a;Shortcut: Ctrl+C" Width="60"/>
-            <Button x:Name="bt_openlink" Content="Open" Margin="0,23,75,0" VerticalAlignment="Top" HorizontalAlignment="Right" IsEnabled="False" ToolTip="Opens URL in browser&#x0a;Shortcut: Ctrl+O" Width="40" Click="bt_openlink_Click"/>
-            <WebBrowser x:Name="browser" Margin="0,51,0,3"/>
+            <Button x:Name="bt_copylink" Content="Copy Link" Margin="0,23,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Click="bt_copylink_Click" IsEnabled="False" ToolTip="Copy link to clipboard&#xA;Shortcut: Ctrl+C" Width="60"/>
+            <Button x:Name="bt_openlink" Content="Open" Margin="0,23,75,0" VerticalAlignment="Top" HorizontalAlignment="Right" IsEnabled="False" ToolTip="Opens URL in browser&#xA;Shortcut: Ctrl+O" Width="40" Click="bt_openlink_Click"/>
+            <cefSharp:ChromiumWebBrowser x:Name="browser" Margin="0,51,0,0" />
         </Grid>
         <Grid Grid.Row="1">
             <Label x:Name="li_title" Content="Title: " HorizontalAlignment="Left" VerticalAlignment="Top"/>

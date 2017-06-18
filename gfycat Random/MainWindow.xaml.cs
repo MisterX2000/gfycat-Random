@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using CefSharp;
 using Newtonsoft.Json.Linq;
 
 namespace gfycat_Random
@@ -17,7 +17,7 @@ namespace gfycat_Random
     /// </summary>
     public partial class MainWindow : Window
     {
-        string format = "mp4";
+        JProperty gfyItem;
         string[] adj;
         string[] ani;
         int fails;
@@ -72,17 +72,12 @@ namespace gfycat_Random
             ani = File.ReadAllLines("animals.txt");
         }
 
-        void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            mediaElement.Position = new TimeSpan(0, 0, 0);
-        }
-
         void bt_random_Click(object sender, RoutedEventArgs e)
         {
             cts = new CancellationTokenSource();
 
-            if (mi_stopmedia.IsChecked)
-                mediaElement.Close();
+            if (mi_stopmedia.IsEnabled)
+                browser.LoadHtml("<body style='background-color:222937;'>");
 
             for (var i = 0; i < threads; i++)
                 DoStuff(cts.Token);
@@ -118,7 +113,7 @@ namespace gfycat_Random
             var word3 = ani[r.Next(0, ani.Length - 1)];
 
             var wordcomb = word1 + word2 + word3;
-            wordcomb = "NervousInsistentGroundbeetle";
+            //wordcomb = "NervousInsistentGroundbeetle";
 
             try
             {
@@ -131,10 +126,10 @@ namespace gfycat_Random
                 {
                     cts.Cancel();
 
-                    var url = json.Property("gfyItem").Value[format + "Url"].ToString();
+                    var item = json.Property("gfyItem");
+                    gfyItem = item;
 
-                    mediaElement.Source = new Uri(url.Replace("https://", "http://"));
-                    mediaElement.Play();
+                    browser.Load("https://gfycat.com/" + item.Value["gfyId"]);
 
                     bt_random.IsEnabled = true;
                     bt_openlink.IsEnabled = true;
@@ -143,11 +138,11 @@ namespace gfycat_Random
                     mi_save.IsEnabled = true;
                     mi_stop.IsEnabled = false;
 
-                    l_link.Content = "https://gfycat.com/" + json.Property("gfyItem").Value["gfyName"];
-                    li_title.Content = "Title: " + json.Property("gfyItem").Value["title"];
-                    li_views.Content = "Views: " + json.Property("gfyItem").Value["views"];
-                    li_uploader.Content = "Uploader: " + json.Property("gfyItem").Value["userName"];
-                    li_date.Content = UtsToDate(json.Property("gfyItem").Value["createDate"].ToObject<double>());
+                    l_link.Content = "https://gfycat.com/" + item.Value["gfyName"];
+                    li_title.Content = "Title: " + item.Value["title"];
+                    li_views.Content = "Views: " + item.Value["views"];
+                    li_uploader.Content = "Uploader: " + item.Value["userName"];
+                    li_date.Content = UtsToDate(item.Value["createDate"].ToObject<double>());
                     fails = 0;
                 }
                 else
@@ -181,9 +176,9 @@ namespace gfycat_Random
         {
             var dlg = new Microsoft.Win32.SaveFileDialog
             {
-                FileName = mediaElement.Source.LocalPath.Substring(1),
-                DefaultExt = "." + format,
-                Filter = "Video|*.mp4;*.webm;*.gif"
+                FileName = gfyItem.Value["gfyName"].ToString(),
+                DefaultExt = ".mp4",
+                Filter = "MP4|*.mp4|WebM|*.webm|Graphics Interchange Format|*.gif",               
             };
 
             // Show save file dialog box
@@ -191,36 +186,18 @@ namespace gfycat_Random
 
             // Process save file dialog box results
             if (result == true)
-            {
-                // Save document
-                var filename = dlg.FileName;
-                new WebClient().DownloadFile(mediaElement.Source.AbsoluteUri, filename);
-            }
-        }
-
-        void mi_mp4_Checked(object sender, RoutedEventArgs e)
-        {
-            format = "mp4";
-            if (mi_webm != null || mi_gif != null)
-            {
-                mi_webm.IsChecked = false;
-                mi_gif.IsChecked = false;
-            }
-
-        }
-
-        void mi_webm_Checked(object sender, RoutedEventArgs e)
-        {
-            format = "webm";
-            mi_mp4.IsChecked = false;
-            mi_gif.IsChecked = false;
-        }
-
-        void mi_gif_Checked(object sender, RoutedEventArgs e)
-        {
-            format = "gif";
-            mi_mp4.IsChecked = false;
-            mi_webm.IsChecked = false;
+                switch (dlg.FilterIndex)
+                {
+                    case 1:
+                        new WebClient().DownloadFile(gfyItem.Value["mp4Url"].ToString(), dlg.FileName);
+                        break;
+                    case 2:
+                        new WebClient().DownloadFile(gfyItem.Value["webmUrl"].ToString(), dlg.FileName);
+                        break;
+                    case 3:
+                        new WebClient().DownloadFile(gfyItem.Value["gifUrl"].ToString(), dlg.FileName);
+                        break;
+                }
         }
 
         void mi_about_Click(object sender, RoutedEventArgs e)
