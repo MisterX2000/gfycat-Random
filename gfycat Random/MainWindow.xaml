@@ -22,7 +22,12 @@
                     <MenuItem x:Name="mi_exit" Header="_Exit" Click="mi_exit_Click"/>
                 </MenuItem>
                 <MenuItem x:Name="mi_settings" Header="_Settings">
-                    <MenuItem x:Name="mi_threads" Header="_Threading" IsCheckable="True" IsChecked="True" ToolTip="Could be unstable" Click="mi_threads_Click"/>
+                    <MenuItem x:Name="mi_threading" Header="_Threading">
+                        <MenuItem x:Name="mi_threads0" Header="_Disabled" IsCheckable="True" Click="mi_threads_Click"/>
+                        <MenuItem x:Name="mi_threads10" Header="_10" IsCheckable="True" IsChecked="True" Click="mi_threads_Click"/>
+                        <MenuItem x:Name="mi_threads50" Header="_50" IsCheckable="True" Click="mi_threads_Click"/>
+                        <MenuItem x:Name="mi_threads100" Header="_100" IsCheckable="True" Click="mi_threads_Click"/>
+                    </MenuItem>
                     <MenuItem x:Name="mi_stopmedia" Header="_Stop media while searching" IsCheckable="True" ToolTip="Stops the playback of the gfycat video while searching new ones." IsChecked="True"/>
                 </MenuItem>
                 <MenuItem x:Name="mi_about" Header="_About" Click="mi_about_Click"/>

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using CefSharp;
 using Newtonsoft.Json.Linq;
@@ -76,7 +77,7 @@ namespace gfycat_Random
         {
             cts = new CancellationTokenSource();
 
-            if (mi_stopmedia.IsEnabled)
+            if (mi_stopmedia.IsChecked)
                 browser.LoadHtml("<body style='background-color:222937;'>");
 
             for (var i = 0; i < threads; i++)
@@ -248,7 +249,29 @@ namespace gfycat_Random
 
         void mi_threads_Click(object sender, RoutedEventArgs e)
         {
-            threads = mi_threads.IsChecked ? 10 : 1;
+            mi_threads0.IsChecked = mi_threads10.IsChecked = mi_threads50.IsChecked = mi_threads100.IsChecked = false;
+
+            var menuItem = sender as MenuItem;
+            if (menuItem != null)
+                switch (menuItem.Header)
+                {
+                    case "_Disabled":
+                        threads = 1;
+                        mi_threads0.IsChecked = true;
+                        break;
+                    case "_10":
+                        threads = 10;
+                        mi_threads10.IsChecked = true;
+                        break;
+                    case "_50":
+                        threads = 50;
+                        mi_threads50.IsChecked = true;
+                        break;
+                    case "_100":
+                        threads = 100;
+                        mi_threads100.IsChecked = true;
+                        break;
+                }
         }
 
         void bt_openlink_Click(object sender, RoutedEventArgs e)
